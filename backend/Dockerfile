@@ -1,5 +1,7 @@
-FROM python:3.8
+FROM node:20-alpine
 WORKDIR /app
-COPY . /app
-RUN pip install -r requirements.txt
-CMD ["python", "app.py"]
+COPY package.json package-lock.json* ./
+RUN npm install --production || npm install --omit=dev
+COPY . .
+EXPOSE 4000
+CMD ["npm","start"]

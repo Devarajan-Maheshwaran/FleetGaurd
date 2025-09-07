@@ -1,5 +1,4 @@
 flask
 flask-socketio
 sqlalchemy
-psycopg2-binary
 flask-cors

@@ -1,18 +1,65 @@
-version: '3'
+version: "3.9"
+
 services:
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+
   backend:
     build: ./backend
-    volumes:
-      - ./backend:/app
+    environment:
+      PORT: 4000
+      MONGO_URL: mongodb://mongo:27017/fleetguard
     ports:
-      - "5000:5000"
-  simulator:
-    build: ./simulator
+      - "4000:4000"
     depends_on:
-      - backend
+      - mongo
+
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "5173:5173"
     depends_on:
       - backend
+
+  ai_engine:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./ai_engine:/app
+    command: >
+      bash -lc "pip install -r requirements.txt &&
+                python model_training.py &&
+                python inference.py"
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      BACKEND_URL: http://backend:4000
+    depends_on:
+      - mosquitto
+      - backend
+
+  simulator:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./simulator:/app
+    command: >
+      bash -lc "pip install -r requirements.txt &&
+                python mqtt_publisher.py --vehicles=8 --interval=1"
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+    depends_on:
+      - mosquitto
+
+volumes:
+  mongo-data:

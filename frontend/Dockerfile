@@ -1,18 +1,8 @@
-FROM node:14
-
-# Create app directory
+FROM node:20-alpine
 WORKDIR /app
-
-# Copy package files and install dependencies first (for better caching)
 COPY package.json package-lock.json* ./
-
-RUN npm install
-
-# Copy rest of the app source files
-COPY . .
-
-# Expose default React port
-EXPOSE 3000
-
-# Start React development server
-CMD ["npm", "start"]
+RUN npm install --production || npm install --omit=dev
+COPY public ./public
+COPY server.js ./server.js
+EXPOSE 5173
+CMD ["node","server.js"]

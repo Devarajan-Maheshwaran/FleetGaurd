@@ -1,0 +1,11 @@
+{
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "css.customData": [
+    ".vscode/tailwind-custom-data.json"
+  ],
+  "python.defaultInterpreterPath": "C:\\Users\\user\\AppData\\Roaming\\Python\\Python313\\python.exe",
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python-envs.pythonProjects": []
+}
